@@ -30,14 +30,13 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-	"title": "Minhas férias na Irlanda",
-	"content": "Minhas férias na Irlanda foram muito boas, consegui conhecer muitos pontos turísticos"
+	"title": "Minhas ferias na Groelândia",
+	"content": "Minhas ferias na Groelândia foram muito boas, consegui conhecer muitos pontos turísticos"
 }
-
 
 ###
 
 # @name fetch_recent_questions
-GET {{baseUrl}}/questions
+GET {{baseUrl}}/questions?page=4
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
