@@ -1,0 +1,43 @@
+@baseUrl = http://localhost:3333
+@authToken = {{authenticate.response.body.access_token}}
+
+# @name create_account
+POST {{baseUrl}}/accounts
+Content-Type: application/json
+
+{
+	"name": "José da Silva Sauro",
+	"email": "johndoe3@example.com",
+	"password": "123456"
+}
+
+###
+
+# @name authenticate
+POST {{baseUrl}}/sessions
+Content-Type: application/json
+
+{
+	"email": "jose@sauro.com",
+	"password": "12345678"
+}
+
+###
+
+# @name create_question
+POST {{baseUrl}}/questions
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"title": "Minhas férias na Irlanda",
+	"content": "Minhas férias na Irlanda foram muito boas, consegui conhecer muitos pontos turísticos"
+}
+
+
+###
+
+# @name fetch_recent_questions
+GET {{baseUrl}}/questions
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
