@@ -2,11 +2,12 @@ import { AppModule } from '@/app.module'
 import { PrismaService } from '@/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
+import { hash } from 'bcryptjs'
 import request from 'supertest'
 
 describe('Create question (E2E)', () => {
   let app: INestApplication
-  // let prisma: PrismaService
+  let prisma: PrismaService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -15,20 +16,37 @@ describe('Create question (E2E)', () => {
 
     app = moduleRef.createNestApplication()
 
-    // prisma = moduleRef.get(PrismaService)
+    prisma = moduleRef.get(PrismaService)
 
     await app.init()
   })
 
   test('[POST] /questions', async () => {
-    const response = await request(app.getHttpServer())
+    await prisma.user.create({
+      data: {
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        password: await hash('12345678', 8),
+      },
+    })
+
+    const loginResponse = await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        email: 'johndoe@example.com',
+        password: '12345678',
+      })
+
+    const { access_token: accessToken } = loginResponse.body
+
+    const responseCreateQuestion = await request(app.getHttpServer())
       .post('/questions')
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         title: 'Title Example',
         content: 'Content Example',
       })
 
-    // expect(response.statusCode).toBe(201)
-    expect(1).toBe(1)
+    expect(responseCreateQuestion.statusCode).toBe(201)
   })
 })
