@@ -24,7 +24,7 @@ export class CreateQuestionController {
   // @HttpCode(201)
   async handle(
     @CurrentUser() user: UserPayload,
-    @Body(bodyValidationPipe) body: CreateQuestionBodySchema
+    @Body(bodyValidationPipe) body: CreateQuestionBodySchema,
   ) {
     const { title, content } = body
     const userId = user.sub

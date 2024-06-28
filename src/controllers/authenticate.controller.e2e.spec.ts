@@ -21,19 +21,32 @@ describe('Authenticate (E2E)', () => {
     await app.init()
   })
 
+  afterAll(async () => {
+    await app.close()
+  })
+
+  beforeEach(async () => {
+    await prisma.question.deleteMany()
+    await prisma.user.deleteMany()
+  })
+
   test('[POST] /sessions', async () => {
+    const uniqueSuffix = Date.now()
+
     await prisma.user.create({
       data: {
         name: 'John Doe',
-        email: 'johndoe@example.com',
+        email: `johndoe+${uniqueSuffix}@example.com`,
         password: await hash('12345678', 8),
       },
     })
 
-    const response = await request(app.getHttpServer()).post('/sessions').send({
-      email: 'johndoe@example.com',
-      password: '12345678',
-    })
+    const response = await request(app.getHttpServer())
+      .post('/sessions')
+      .send({
+        email: `johndoe+${uniqueSuffix}@example.com`,
+        password: '12345678',
+      })
 
     expect(response.statusCode).toBe(201)
     expect(response.body).toEqual({
